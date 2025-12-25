@@ -1,6 +1,6 @@
 name: cognito_auth
 description: Plug-and-play AWS Cognito authentication for Flutter
-version: 1.0.0
+version: 1.0.1
 
 environment:
   sdk: ^3.7.0
