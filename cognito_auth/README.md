@@ -1,160 +1,61 @@
-# 🔐 Cognito Auth - Plug & Play
+# Cognito Auth Package
 
-Dead-simple AWS Cognito authentication for Flutter.
+A shared Flutter package for handling AWS Cognito authentication with Hosted UI support (Apple Sign In & Email).
 
-## 🚀 3-Step Integration
+## Features
+- AWS Cognito User Pool authentication via Hosted UI
+- Apple Sign In support
+- Use of secure `flutter_web_auth` meant for mobile apps
+- Token management (Access, ID, Refresh)
+- Auto-refresh of tokens
 
-### 1. Add to `pubspec.yaml`
+## Setup Instructions
 
-```yaml
-dependencies:
-  cognito_auth:
-    path: packages/cognito_auth
-```
+### 1. AWS Cognito Configuration
+Ensure your User Pool App Client is configured as **Public Client** (No Secret).
+- **Callback URL:** `quickvidai://auth/callback`
+- **Sign Out URL:** `quickvidai://auth/signout`
+- **Identity Providers:** Enable `Cognito User Pool` and `Sign in with Apple`
+- **Scopes:** `openid`, `email`, `profile`
 
-Run: `flutter pub get`
+### 2. Apple Developer Portal
+- **Service ID:** Create a Service ID (e.g., `com.example.service`).
+- **Domain Verification:** Add your Cognito Domain (e.g., `us-east-1xxx.auth...`) to "Domains and Subdomains".
+- **Return URLs:** Add the Cognito callback: `https://[your-domain].auth.us-east-1.amazoncognito.com/oauth2/idpresponse`
 
-### 2. Initialize in `main.dart`
+### 3. Usage inside Flutter App
+
+Initialize in `main.dart`:
 
 ```dart
-import 'package:cognito_auth/cognito_auth.dart';
-
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  // Initialize Auth
   CognitoAuth.initialize(
     config: CognitoConfig(
-      userPoolId: 'us-east-1_YOUR_POOL_ID',
-      clientId: 'YOUR_CLIENT_ID',
+      userPoolId: 'us-east-1_xxxxx',
+      clientId: 'xxxxxxxxxxxx',
       region: 'us-east-1',
+      cognitoDomain: 'us-east-15j3wzxbio.auth.us-east-1.amazoncognito.com', // No https:// prefix
     ),
   );
-  
+
   runApp(MyApp());
 }
 ```
 
-### 3. Use AuthBloc
-
-```dart
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => CognitoAuth.createAuthBloc()
-        ..add(CheckAuthStatus()),
-      child: MaterialApp(
-        home: BlocBuilder<AuthBloc, AuthState>(
-          builder: (context, state) {
-            if (state is Authenticated) return HomePage();
-            return LoginPage(); // Built-in UI
-          },
-        ),
-      ),
-    );
-  }
-}
-```
-
-**Done! 🎉**
-
----
-
-## 📖 Usage
-
-### Protect Actions
-
-```dart
-ElevatedButton(
-  onPressed: () async {
-    final isAuth = await AuthGuard.requireAuth(context);
-    if (isAuth) {
-      // User authenticated, proceed
-      generateVideo();
-    }
-  },
-  child: Text('Generate'),
-)
-```
-
-### Get User Info
-
-```dart
-final state = context.read<AuthBloc>().state as Authenticated;
-print('Email: ${state.email}');
-print('User ID: ${state.userId}');
-```
-
-### Sign Out
-
-```dart
-context.read<AuthBloc>().add(SignOut());
-```
-
----
-
-## 🎨 Custom UI
-
-```dart
-// Use your own login UI
-ElevatedButton(
-  onPressed: () {
-    context.read<AuthBloc>().add(
-      SignInWithEmail(
-        email: email,
-        password: password,
-      ),
-    );
-  },
-  child: Text('Sign In'),
-)
-```
-
----
-
-## 📱 iOS Setup (Apple Sign In)
-
-1. Xcode: Runner → Capabilities → Add "Sign in with Apple"
-2. Update `Info.plist`:
+### 4. Info.plist (iOS)
+Add the URL scheme for callbacks:
 
 ```xml
 <key>CFBundleURLTypes</key>
 <array>
-  <dict>
-    <key>CFBundleURLSchemes</key>
-    <array>
-      <string>your-app-scheme</string>
-    </array>
-  </dict>
+    <dict>
+        <key>CFBundleURLSchemes</key>
+        <array>
+            <string>quickvidai</string>
+        </array>
+    </dict>
 </array>
 ```
-
----
-
-## 🔧 API
-
-### Events
-- `CheckAuthStatus`
-- `SignInWithEmail(email, password)`
-- `SignInWithApple()`
-- `SignUpWithEmail(email, password, name)`
-- `SignOut()`
-
-### States
-- `Authenticated(userId, email, name)`
-- `Unauthenticated`
-- `AuthLoading`
-- `AuthError(message)`
-
----
-
-## 📦 What's Included
-
-✅ Email/Password auth  
-✅ Sign in with Apple  
-✅ Auto token management  
-✅ Secure storage  
-✅ Pre-built UI  
-✅ Auth guards  
-
----
-
-**That's it! Copy this package to any Flutter project and you're ready to go.**
