@@ -22,6 +22,10 @@ dependencies:
   # State management (match parent project)
   flutter_bloc: ^9.1.1
   equatable: ^2.0.5
+  
+  # OAuth / Hosted UI
+  flutter_web_auth: ^0.5.0
+  http: ^0.13.6
 
 dev_dependencies:
   flutter_test:

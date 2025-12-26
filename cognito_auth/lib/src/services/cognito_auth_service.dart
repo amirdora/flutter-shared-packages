@@ -1,21 +1,16 @@
 import 'package:amazon_cognito_identity_dart_2/cognito.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import '../config/cognito_config.dart';
 
 /// AWS Cognito authentication service
 /// Handles email/password and Sign in with Apple authentication
 class CognitoAuthService {
-  // Cognito configuration
-  static const String userPoolId = 'us-east-1_27Ffsl6BY';
-  static const String clientId = '2jtfovlfetlaen1ch86clgjcl7';
-  static const String region = 'us-east-1';
-  static const String cognitoDomain =
-      'figoodle-auth.auth.us-east-1.amazoncognito.com';
-
+  final CognitoConfig config;
   late final CognitoUserPool _userPool;
   final _storage = const FlutterSecureStorage();
 
-  CognitoAuthService() {
-    _userPool = CognitoUserPool(userPoolId, clientId);
+  CognitoAuthService({required this.config}) {
+    _userPool = CognitoUserPool(config.userPoolId, config.clientId);
   }
 
   // ==================== EMAIL/PASSWORD AUTH ====================

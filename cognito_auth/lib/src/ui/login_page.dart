@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:sign_in_with_apple/sign_in_with_apple.dart' as apple;
-import '../../bloc/auth_bloc.dart';
-import '../../bloc/auth_event.dart';
-import '../../bloc/auth_state.dart';
+
+import '../bloc/auth_bloc.dart';
+import '../bloc/auth_event.dart';
+import '../bloc/auth_state.dart';
 
 /// Simple login page with Apple Sign In
 class LoginPage extends StatelessWidget {
@@ -16,6 +16,14 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.close, color: Colors.black),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
       body: BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is Authenticated) {
@@ -107,38 +115,32 @@ class LoginPage extends StatelessWidget {
                     const SizedBox(height: 24),
                   ],
 
-                  // Benefits
-                  _buildBenefit(Icons.stars, 'Get 10 free credits'),
-                  const SizedBox(height: 12),
-                  _buildBenefit(Icons.cloud_done, 'Save all your videos'),
-                  const SizedBox(height: 12),
-                  _buildBenefit(Icons.devices, 'Access from any device'),
-                  const SizedBox(height: 32),
-
-                  // Sign in with Apple button
+                  // Main Log In / Sign Up Button
                   if (isLoading)
                     const Center(child: CircularProgressIndicator())
                   else
-                    apple.SignInWithAppleButton(
+                    ElevatedButton(
                       onPressed: () {
+                        // This triggers the Hosted UI which now handles both Apple and Email
                         context.read<AuthBloc>().add(SignInWithApple());
                       },
-                      height: 50,
-                      borderRadius: BorderRadius.circular(12),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.black,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        elevation: 0,
+                      ),
+                      child: const Text(
+                        'Log In / Sign Up',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
-
-                  const SizedBox(height: 16),
-
-                  // Email sign in option
-                  TextButton(
-                    onPressed:
-                        isLoading
-                            ? null
-                            : () {
-                              Navigator.pushNamed(context, '/email-login');
-                            },
-                    child: const Text('Sign in with Email'),
-                  ),
 
                   const SizedBox(height: 24),
 
