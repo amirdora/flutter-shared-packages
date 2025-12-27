@@ -123,12 +123,18 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       );
 
       // Save tokens to secure storage
-      await _storage.write(key: 'access_token', value: tokens['access_token']);
-      await _storage.write(key: 'id_token', value: tokens['id_token']);
+      // Save tokens to secure storage (Using same keys as CognitoAuthService)
       await _storage.write(
-        key: 'refresh_token',
-        value: tokens['refresh_token'],
+        key: 'cognito_access_token',
+        value: tokens['access_token'],
       );
+      await _storage.write(key: 'cognito_id_token', value: tokens['id_token']);
+      if (tokens['refresh_token'] != null) {
+        await _storage.write(
+          key: 'cognito_refresh_token',
+          value: tokens['refresh_token'],
+        );
+      }
 
       // Extract user details
       final userId = userInfo['sub'] as String;

@@ -77,8 +77,9 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         home: BlocBuilder<AuthBloc, AuthState>(
           builder: (context, state) {
+            // Your Custom UI Implementation
             if (state is Authenticated) return HomePage();
-            return LoginPage(); // Built-in UI
+            return MyCustomLoginPage(); 
           },
         ),
       ),
@@ -128,39 +129,21 @@ ElevatedButton(
 )
 ```
 
-### Custom Login UI
+### Custom Login UI (Recommended)
 
-Build your own login form:
+For best results, build the Login UI in your main app to match your branding.
+Use `AuthBloc` events to trigger authentication logic from the shared package.
+
+**Events:**
+- `SignInWithApple()` - Triggers Hosted UI flow.
+- `SignOut()` - Clears tokens.
+
+**Example Implementation:**
 ```dart
+// frontend/lib/features/auth/login_page.dart
 ElevatedButton(
   onPressed: () {
-    context.read<AuthBloc>().add(
-      SignInWithEmail(
-        email: emailController.text,
-        password: passwordController.text,
-      ),
-    );
-  },
-  child: Text('Sign In'),
-)
-
-// Sign Up
-ElevatedButton(
-  onPressed: () {
-    context.read<AuthBloc>().add(
-      SignUpWithEmail(
-        email: emailController.text,
-        password: passwordController.text,
-        name: nameController.text,
-      ),
-    );
-  },
-  child: Text('Sign Up'),
-)
-
-// Apple Sign In
-ElevatedButton(
-  onPressed: () {
+    // Triggers the shared logic
     context.read<AuthBloc>().add(SignInWithApple());
   },
   child: Text('Sign in with Apple'),
@@ -234,7 +217,7 @@ BlocListener<AuthBloc, AuthState>(
 ✅ Sign in with Apple
 ✅ Automatic token management
 ✅ Secure credential storage
-✅ Pre-built login UI
+
 ✅ Auth guards for protected actions
 ✅ BLoC state management
 
